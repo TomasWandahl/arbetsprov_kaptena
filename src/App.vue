@@ -7,7 +7,6 @@
             <Company :company = company :getPersonName =  "getPersonName" />
         </div>
     </div>
-    <Person />
   </div>
 </template>
 <script>
