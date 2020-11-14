@@ -2,8 +2,9 @@
   <div id="app">
     <div class="bg-image"></div>
     <h1 class="title"> Arbetsprov </h1>
+    <SearchBar :getCompany = "getCompany" :showAllCompanies = "showAllCompanies" />
     <div class="companies">
-        <div v-for="company in companies" :key="company.companyId">
+        <div v-for="company in displayedCompanies" :key="company.companyId">
             <Company :company = company :getPersonName =  "getPersonName" />
         </div>
     </div>
@@ -12,17 +13,19 @@
 <script>
 
 import Company from './components/Company';
+import SearchBar from './components/SearchBar';
 
 export default {
   name: 'App',
   components: {
-    Company
+    Company, SearchBar
   },
   data () {
     return {
       message: 'message',
       companies: {},
-      persons: {}
+      persons: {},
+      displayedCompanies: {}
     }
   },
   beforeMount() {
@@ -31,6 +34,7 @@ export default {
   methods: {
     async setData() {
       this.companies = await this.fetchData("https://cors-anywhere.herokuapp.com/kap-csd.herokuapp.com/api/assessment/companies");
+      this.displayedCompanies = this.companies;
       this.persons = await this.fetchData('https://cors-anywhere.herokuapp.com/kap-csd.herokuapp.com/api/assessment/persons');
     },
 
@@ -42,6 +46,13 @@ export default {
     getPersonName(pnum) {
       let person = this.persons.filter(x => x.personalNumber == pnum)[0];
       return `${person.firstName} ${person.surName}`;
+    },
+    getCompany(companyNameQuery) {
+      let company = this.companies.filter(comp => comp.companyName.includes(companyNameQuery));
+      this.displayedCompanies = company;
+    },
+    showAllCompanies() {
+      this.displayedCompanies = this.companies;
     }
   }
 }
